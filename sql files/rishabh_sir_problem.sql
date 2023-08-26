@@ -69,6 +69,22 @@ select salary from employee;
 SELECT EmpID, Salary, SUM(Salary) OVER (ORDER BY EmpID) AS CumulativeSum
 FROM Employee
 
+### Q2(c): Write a query to fetch 50% records from the Employee table.
 
-select empid , sum(salary) over(order by salary) as salaryes from employee
+select * from employee 
+where EmpID <= (select count(EmpID)/2 FROM Employee)
+
+
+### Q2(b): What’s the male and female employees ratio.
+
+SELECT
+(COUNT(*) FILTER (WHERE Gender = 'M') * 100.0 / COUNT(*)) AS MalePct,
+(COUNT(*) FILTER (WHERE Gender = 'F') * 100.0 / COUNT(*)) AS FemalePct
+FROM Employee;
+
+
+### Query to fetch the employee’s salary but replace the LAST 2 digits with ‘XX’
+    -- i.e 12345 will be 123XX
+
+SELECT CONCAT(LEFT(salary, LENGTH(salary) - 2), '**') as 'masked_salary' FROM employee;
 
