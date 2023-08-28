@@ -1,6 +1,8 @@
 show databases
 create database rishabh
 use rishabh
+show tables
+
 
 ## table creating for the problem
 CREATE TABLE Employee (
@@ -76,15 +78,116 @@ where EmpID <= (select count(EmpID)/2 FROM Employee)
 
 
 ### Q2(b): What’s the male and female employees ratio.
+select * from employee
+-- code for to count the value-- 
+SELECT SUM(CASE WHEN Gender = "M" THEN 1 ELSE 0 END) as malecount ,
+	   SUM(CASE WHEN Gender = "f" THEN 1 ELSE 0 END) AS femalecount  from employee
 
-SELECT
-(COUNT(*) FILTER (WHERE Gender = 'M') * 100.0 / COUNT(*)) AS MalePct,
-(COUNT(*) FILTER (WHERE Gender = 'F') * 100.0 / COUNT(*)) AS FemalePct
-FROM Employee;
-
+-- To count percentage
+SELECT SUM(CASE WHEN Gender = "M" THEN 1 ELSE 0 END)/count(*)*100 as malecount ,
+	   SUM(CASE WHEN Gender = "f" THEN 1 ELSE 0 END)/count(*)*100 AS femalecount  from employee
+       
+-- percentage with round
+SELECT ROUND(SUM(CASE WHEN Gender = "M" THEN 1 ELSE 0 END)/count(*)*100) as malecount ,
+	   ROUND(SUM(CASE WHEN Gender = "f" THEN 1 ELSE 0 END)/count(*)*100) AS femalecount  from employee
+       
+-- percentage with symbol
+SELECT CONCAT(ROUND(SUM(CASE WHEN Gender = "M" THEN 1 ELSE 0 END)/count(*)*100),"%") as MALE_RATIO ,
+	   CONCAT(ROUND(SUM(CASE WHEN Gender = "f" THEN 1 ELSE 0 END)/count(*)*100),"%") AS FEMALE_RATIO  from employee
 
 ### Query to fetch the employee’s salary but replace the LAST 2 digits with ‘XX’
     -- i.e 12345 will be 123XX
 
 SELECT CONCAT(LEFT(salary, LENGTH(salary) - 2), '**') as 'masked_salary' FROM employee;
+
+### Q4: Write a query to fetch even and odd rows from Employee table.
+
+-- fetch for EVEN first way
+SELECT * FROM employee where empid %2 = 0
+
+-- fetch for EVEN second way
+SELECT * FROM Employee where MOD(Empid,2)=0
+
+
+-- FETCH FOR ODD
+SELECT * FROM employee where empid %2!= 0
+
+-- UNION and UNION ALL
+SELECT * FROM employee where empid %2 = 0
+union
+SELECT * FROM employee where empid %2!= 0
+
+SELECT * FROM employee where empid %2 = 0
+union all
+SELECT * FROM employee where empid %2!= 0
+
+
+-- Q5(a): Write a query to find all the Employee names whose name:
+-- • Begin with ‘A’
+-- • Contains ‘A’ alphabet at second place
+-- • Contains ‘T’ alphabet at second last place
+-- • Ends with ‘L’ and contains 4 alphabets 
+-- • Begins with ‘V’ and ends with ‘A’
+
+-- %  --> for single or multiple character
+-- _  --> for single character
+select * from employee
+SELECT EmpName FROM Employee where EmpName LIKE "A%"
+SELECT EmpName FROM Employee where EmpName LIKE "_a%"
+SELECT EmpName FROM Employee WHERE EmpName LIKE "%t_"
+SELECT EmpName FROM Employee WHERE EmpName LIKE "___L"
+SELECT EmpName FROM Employee WHERE EmpName LIKE "v%a"
+
+-- Q5(b): Write a query to find the list of Employee names which is:
+-- • starting with vowels (a, e, i, o, or u), without duplicates
+-- • ending with vowels (a, e, i, o, or u), without duplicates
+-- • starting & ending with vowels (a, e, i, o, or u), without duplicates
+
+-- • starting with vowels (a, e, i, o, or u), without duplicates
+SELECT EmpName
+FROM Employee
+WHERE left(EmpName,1) IN ('a', 'e', 'i', 'o', 'u');
+
+-- • ENDING with vowels (a, e, i, o, or u), without duplicates
+SELECT EmpName
+FROM Employee
+WHERE right(EmpName,1) IN ('a', 'e', 'i', 'o', 'u');
+
+-- • starting & ending with vowels (a, e, i, o, or u), without duplicates
+SELECT EmpName FROM Employee
+WHERE left(empname,1) in ('a', 'e', 'i', 'o', 'u') and right(empname,1) in ('a', 'e', 'i', 'o', 'u')
+
+SELECT DISTINCT EmpName FROM Employee
+WHERE left(empname,1) in ('a', 'e', 'i', 'o', 'u') and right(empname,1) in ('a', 'e', 'i', 'o', 'u')
+
+### Ques  Find the all record which salary greater than average salary
+
+select * from employee where salary >=(select avg(salary) from employee)
+
+
+### Q6: Find Nth highest salary from employee table with and without using the
+-- TOP/LIMIT keywords.
+-- LIMIT 0 , 1         --> 0 FOR offset and 1 For LIMIT
+
+
+-- second highest salary using LIMIT
+select empname , salary from employee order by salary desc limit 1,1
+
+-- unique rank assigned based on the salary assume window fun,, as a column
+SELECT EmpName , salary , ROW_NUMBER() over (order by salary desc) as salary_rank FROM Employee 
+
+-- ASSIGN the unique rank , assume window fun.. as a table.
+select empname ,salary , rank_column FROM (select *,row_number() over(order by salary desc) as rank_column from employee) as rank_table ;
+
+
+-- FIND Nth Highest salary without using LIMIT / OFFSET
+
+SELECT EmpName , salary 
+FROM
+(select *, ROW_NUMBER() over (order by salary desc) as salary_rank from employee) as RANK_TABLE
+WHERE  RANK_TABLE.salary_rank = 2
+
+
+
+
 
