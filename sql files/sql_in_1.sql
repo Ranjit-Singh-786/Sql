@@ -34,10 +34,10 @@ select countrycode , count(*) from city group by countrycode order by countrycod
 select countrycode ,avg(id),sum(id) ,count(*) , min(population) , max(population)  from city group by countrycode order by countrycode desc
 select avg(population) from (select * from city where countrycode ="zwe") as a 
 select avg(population) from city
-set sql_safe_updates = 0  # if you want to any value in your table
+set sql_safe_updates = 0  # if you want to update any value in your table
 # then it may be possible it will say that this is not safe. then hit this command of your value
 
-# procedure in sql withour parameter
+# procedure in sql without parameter
 DELIMITER &&
 create procedure selectall()
 BEGIN
