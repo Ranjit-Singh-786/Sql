@@ -9,4 +9,10 @@ all the BASIC to INTERMEDIATE Problems most commonly asked query in INTERVIEW,
 ### mob :- 9759194985
 # SQL using with python..
 
+command to connect to new user
+```bash
+sudo mysql -u raj -p
+```
+
+
 
